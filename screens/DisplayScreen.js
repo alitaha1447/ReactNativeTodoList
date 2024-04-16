@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, Modal, Button } from 'react-native';
+import { View, Text, TextInput, FlatList, StyleSheet, TouchableOpacity, Modal, Button, Image, Dimensions } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
+const { height, width } = Dimensions.get('window')
 const DisplayTask = ({ route }) => {
-  const { taskList } = route.params;
+  const { taskList, setTaskList } = route.params;
   const [tasks, setTasks] = useState(taskList);
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedTodoId, setSelectedTodoId] = useState(null);
@@ -11,7 +12,8 @@ const DisplayTask = ({ route }) => {
 
   const handleDelete = (id) => {
     const newTasks = tasks.filter((item) => item.id !== id);
-    setTasks(newTasks);
+    setTasks(newTasks)
+    setTaskList(newTasks);
     console.log(newTasks);
   };
 
@@ -28,30 +30,42 @@ const DisplayTask = ({ route }) => {
       item.id === selectedTodoId ? { ...item, title: updatedTodoTitle } : item
     );
     setTasks(updatedList);
+    setTaskList(updatedList);
     setModalVisible(false);
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>All Tasks</Text>
-      <FlatList
-        data={tasks}
-        renderItem={({ item }) => (
-          <View style={styles.taskItem}>
-            <Text style={styles.taskTitle}>{item.title}</Text>
-            <View style={styles.icon}>
-              <TouchableOpacity onPress={() => handleDelete(item.id)}>
-                <Icon name="trash" size={30} color="#900" style={styles.iconMargin} />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => openModal(item.id, item.title)}>
-                <Icon name="pencil" size={30} color="#900" style={styles.iconMargin} />
-              </TouchableOpacity>
+      {tasks.length === 0 ? (
+        <Text style={styles.title}>No Task Found</Text>
+      ) : (
+        <Text style={styles.title}>All Tasks</Text>
+      )}
+      {tasks.length === 0 ? (
+        <View style={styles.imageContainer}>
+          <Image source={require('../assets/noTask.png')} style={styles.image} />
+        </View>
+      ) : (
+        <FlatList
+          data={tasks}
+          renderItem={({ item }) => (
+            <View style={styles.taskItem}>
+              <Text style={styles.taskTitle}>{item.title}</Text>
+              <View style={styles.icon}>
+                <TouchableOpacity onPress={() => handleDelete(item.id)}>
+                  <Icon name="trash" size={30} color="#900" style={styles.iconMargin} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => openModal(item.id, item.title)}>
+                  <Icon name="pencil" size={30} color="#900" style={styles.iconMargin} />
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-        )
-        }
-        keyExtractor={item => item.id}
-      />
+          )
+          }
+          keyExtractor={item => item.id}
+        />
+      )}
+
       <Modal
         animationType="slide"
         transparent={true}
@@ -96,6 +110,17 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+  },
+  imageContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    width: width * 0.8, // 80% of the screen width
+    height: height * 0.6, // 60% of the screen height
+    borderColor: 'black',
+    resizeMode: 'contain',
   },
   taskItem: {
     backgroundColor: '#fff',

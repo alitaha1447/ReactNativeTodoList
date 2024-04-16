@@ -39,7 +39,7 @@ const AddTaskScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.addButton} onPress={handleAddTask}>
         <Text style={styles.buttonText}>Add Task</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={[styles.addButton, { marginTop: 10 }]} onPress={() => navigation.navigate("Display Screen", { taskList })}>
+      <TouchableOpacity style={[styles.addButton, { marginTop: 10 }]} onPress={() => navigation.navigate("Display Screen", { taskList, setTaskList })}>
         <Text style={styles.buttonText}>Display All Tasks</Text>
       </TouchableOpacity>
     </View>
